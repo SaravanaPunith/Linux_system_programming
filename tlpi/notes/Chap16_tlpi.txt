@@ -1,0 +1,282 @@
+
+chapter 16:
+
+EA
+ arbitrary metadata 
+ name-value pairs associated with file i-nodes.
+
+   - implement acl/ file capabilities.
+   - generic
+   - record a file version / info about MIME type/..
+
+required support from underlying f/s
+
+ext2,3,4, jfs, xfs, jfs.
+
+- support is optional.
+
+---------------------
+names of the form namespace.name.
+
+(eg: trusted.gfid)
+
+namespace - to separate EAs into functionally distinct classes.
+
+name - identifies a EA within namespace.
+
+4 values for namespace - 
+user
+trusted
+system
+security.
+----------------
+user - can be manipulated by unprivileged processes(subject to file permissions).
+
+read permission - to read.
+change - write
+	else EACCESS.
+
+mount -o user_xattr <device> directory
+--
+Trusted EAs - 
+process must be privileged(CAP_SYS_ADMIN) in order
+to manipulate trusted EAs.
+--
+System EAs - by kernel to associate system objects 
+with a file. (currently only supported - ACL)
+--
+Security EAs - 
+to store file security labels for o/s security modules,
+to assoc. capabilities with executable files.
+(devices for selinux).
+----------------------------
+
+user, trusted - can be arbitrary strings.
+system - permitted by kernel.(used for ACL)
+
+----------------------------
+
+setfattr / getfattr
+
+touch tfile
+
+setfattr -n user.x -v "future" tfile
+
+setfattr -n user.y -v "superb" tfile.
+
+getfattr -n user.x tfile
+
+getfattr -d tile
+
+setfattr -n user.x tfile
+
+getfattr -d tfile
+
+setfattr -x user.y tfile
+
+getfattr -d tfile
+
+---------
+
+getfattr - values of user EAs.
+
+-m - for pattern.
+
+default value for patter is ^user\..
+
+getfattr -d -m - file
+
+---------
+
+restrictions:
+
+only possible for "user" EAs on files and directories.
+
+other EAs are exclued : why?
+	1. for a symbolic link, all permissions
+are enabled for all users, and these permissions
+can't be changed. 
+(symlinks permission have NO MEANING on Linux).
+permission CANNOT be used to prevent arbitrary users
+from placing user EAs on a symbolic link.
+
+resolution - prevent all uesrs from created USER EAs on the symbolic link.
+
+	2. for device files, sockets, fifos, permissions 
+control the access I/O on object.
+manipulating these permissions to control creation of user EAs would conflict this purpose.
+
+
+limits:
+length of EA name - 255
+EA value - 64 kB
+
+ext2,3,4 - total bytes (name+value) - single logical disk block
+1024, 2048, 4096
+
+JFS - (name + value) 128 kb 
+--------------
+
+system  calls:
+
+setxattr (pathname, name,value, size, flags)
+
+lsetxattr (pathname, name,value, size, flags)
+
+fsetxattr (fd,name, value, size, flags)
+
+similar to stat, lstat, fstat()
+
+
+setxattr - deferences filename if symlink.
+lsetxattr - does not deference symbolic link.
+
+name , value, len (of value).
+
+can created new EA if one doesn't exists.
+ or replace if one exists.
+
+flags - fine control over this behaviour
+ 0 - default
+ XATTR_CREATE - fail, if name exists
+ XATTR_REPLACE - fail if name doesn't exists.
+    
+-------------
+
+getxattr (pathname, name, value, size)
+
+lgetxattr (pathname, name, value, size)
+
+fgetxattr (fd, name, value, size)
+
+name - what we want?
+
+retun value  - "value" leng.
+
+if not, ENODATA
+
+size small, ERANGE.
+
+
+size 0 , value ignored , returns size of EA value.
+
+to get size of value buffer, to actually retrieve the EA value.
+--------------------
+remotexattr
+
+lremovexattr
+
+fremovexattr
+
+--------------------
+Retrieving names of all EAs
+
+listxattr ( pathname, list, size)
+
+llistxattr (pathname, list, size)
+
+flistxattr (fd, list, size)
+
+list of all of the EAs returned in "list"
+
+returns number of bytes copied to list.
+
+
+like getxattr possible to size 0.
+ then list is ignored.
+
+system call returns size of the buffer that would be required
+for a subsequent call to actually retrieve the EA name list.
+
+
+file be accessible ( +x to all dirs. in pathname)
+no permission required on file itself.
+
+may exclude attributes which calling process doesnot have 
+access.
+
+ - *may* omit trusted attributes from the list returned by a call to listxattr() in an unprivileged process.
+
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       
+
+
