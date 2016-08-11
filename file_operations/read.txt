@@ -1,0 +1,60 @@
+       readv, writev, preadv, pwritev - read or write data into multiple buffers
+       #include <sys/uio.h>
+
+       ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
+
+       ssize_t writev(int fd, const struct iovec *iov, int iovcnt);
+
+       ssize_t preadv(int fd, const struct iovec *iov, int iovcnt,
+                      off_t offset);
+
+       ssize_t pwritev(int fd, const struct iovec *iov, int iovcnt,
+                       off_t offset);
+
+iov - scatter input 
+fd - gather output
+
+       The  readv() system call reads iovcnt buffers from the file associated with the file descriptor fd into the buffers
+       described by iov ("scatter input").
+
+       The writev() system call writes iovcnt buffers of data described by iov  to  the  file  associated  with  the  file
+       descriptor fd ("gather output").
+
+       The pointer iov points to an array of iovec structures, defined in <sys/uio.h> as:
+
+           struct iovec {
+               void  *iov_base;    /* Starting address */
+               size_t iov_len;     /* Number of bytes to transfer */
+           };
+
+
+readv same as read except multiple buffers filled.
+
+writev same as write except multiple muffers are written out. to fd.
+
+preadv and pwritev
+
+preadv = readv + offset
+
+pwritev = writev + offset
+
+-----------------------------------
+       pread, pwrite - read from or write to a file descriptor at a given offset
+
+SYNOPSIS
+       #include <unistd.h>
+
+       ssize_t pread(int fd, void *buf, size_t count, off_t offset);
+
+       ssize_t pwrite(int fd, const void *buf, size_t count, off_t offset);
+
+read / write at given offset.
+
+useful in multithreaded applications.
+
+In linux, 
+O_APPEND - means end of file / no respect to offset.
+
+
+
+
