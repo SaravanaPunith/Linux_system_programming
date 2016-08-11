@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 read /write - in terms of fd
         - read from fd
         - write into fd.
 
-        readv, writev, preadv, pwritev - read or write data into multiple buffers
-=======
        readv, writev, preadv, pwritev - read or write data into multiple buffers
->>>>>>> 0ed38cacdc1c977734a416ad08ef091f8f0583af
        #include <sys/uio.h>
 
        ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
