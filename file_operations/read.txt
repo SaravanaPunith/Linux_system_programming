@@ -1,4 +1,3 @@
-       
 read /write - in terms of fd
         - read from fd
         - write into fd.
